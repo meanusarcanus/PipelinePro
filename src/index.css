@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-[#f6f7fb] text-slate-800 font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Monday.com styled scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Monday Grid Cell hover and focus effects */
+.monday-cell-interactive {
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+.monday-cell-interactive:hover {
+  outline: 1px solid #c7d2fe;
+  outline-offset: -1px;
+}
+.monday-cell-interactive:focus-within {
+  outline: 2px solid #579bfc;
+  outline-offset: -2px;
+}
+
+/* Shimmer animation for live status badge */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
