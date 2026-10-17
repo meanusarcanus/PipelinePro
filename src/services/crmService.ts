@@ -172,6 +172,14 @@ export class CrmService {
     }
   }
 
+  static saveTeam(team: TeamMember[]): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.TEAM, JSON.stringify(team));
+    } catch (e) {
+      console.error('Failed to save team to localStorage', e);
+    }
+  }
+
   // Reset to demo data
   static resetToDemoData(): { 
     deals: DealItem[]; 

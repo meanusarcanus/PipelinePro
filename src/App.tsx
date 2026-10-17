@@ -21,6 +21,7 @@ import { MobileNavBar } from './components/layout/MobileNavBar';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { MobileDealList } from './components/mobile/MobileDealList';
 import { PwaInstallBanner } from './components/common/PwaInstallBanner';
+import { TeamManagementModal } from './components/modals/TeamManagementModal';
 
 export const App: React.FC = () => {
   const { currentView, addNotification } = useCrmStore();
@@ -115,6 +116,7 @@ export const App: React.FC = () => {
 
       {/* Modals */}
       <LoginModal />
+      <TeamManagementModal />
       <NewDealModal />
       <NewRequestModal />
       <NotificationDrawer />

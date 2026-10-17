@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { X, Lock, Mail, ArrowRight, UserCheck, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, Lock, Mail, ArrowRight, UserCheck, ShieldCheck, Sparkles, UserPlus } from 'lucide-react';
 import { useCrmStore } from '../../store/useCrmStore';
 import { Avatar } from '../common/Avatar';
 import { Logo } from '../common/Logo';
 import { TeamMember } from '../../types/crm';
 
 export const LoginModal: React.FC = () => {
-  const { isLoginModalOpen, setLoginModalOpen, team, login } = useCrmStore();
+  const { isLoginModalOpen, setLoginModalOpen, team, login, setTeamModalOpen } = useCrmStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -79,6 +79,24 @@ export const LoginModal: React.FC = () => {
                   <ArrowRight className="w-3.5 h-3.5 text-slate-300 group-hover:text-blue-600 transition-colors" />
                 </button>
               ))}
+
+              {team.length < 10 ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginModalOpen(false);
+                    setTeamModalOpen(true);
+                  }}
+                  className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-100/60 text-blue-700 transition-all text-xs font-semibold col-span-1 sm:col-span-2"
+                >
+                  <UserPlus className="w-4 h-4 text-blue-600" />
+                  <span>+ Add New User / Manage Seats ({team.length}/10 seats)</span>
+                </button>
+              ) : (
+                <div className="flex items-center justify-center p-2 rounded-xl bg-slate-100 text-slate-500 text-[11px] font-medium col-span-1 sm:col-span-2">
+                  Commercial license capacity reached (10/10 seats utilized)
+                </div>
+              )}
             </div>
           </div>
 

@@ -25,7 +25,9 @@ export const Sidebar: React.FC = () => {
     opsRequests,
     workspaces,
     activeWorkspaceId,
-    setActiveWorkspaceId 
+    setActiveWorkspaceId,
+    team,
+    setTeamModalOpen
   } = useCrmStore();
 
   const pendingOpsCount = opsRequests.filter(r => r.status === 'pending').length;
@@ -169,8 +171,25 @@ export const Sidebar: React.FC = () => {
         )}
       </div>
 
-      {/* Bottom section: Help & Info */}
+      {/* Bottom section: Team Management & Help */}
       <div className="p-3 border-t border-slate-800/80 space-y-1">
+        <button
+          onClick={() => setTeamModalOpen(true)}
+          className={`w-full flex items-center justify-between text-xs text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-800/80 transition-colors ${collapsed ? 'justify-center px-0' : ''}`}
+          title="Manage Team & Commercial Seats (Max 10)"
+        >
+          <div className="flex items-center gap-2.5">
+            <Users className="w-4 h-4 text-blue-400" />
+            {!collapsed && <span className="font-semibold">Team & Seats</span>}
+          </div>
+          {!collapsed && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+              team.length >= 10 ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+            }`}>
+              {team.length}/10
+            </span>
+          )}
+        </button>
 
         <div className={`flex items-center text-xs text-slate-400 px-3 py-2 ${collapsed ? 'justify-center px-0' : 'gap-2'}`}>
           <HelpCircle className="w-4 h-4 text-slate-400" />

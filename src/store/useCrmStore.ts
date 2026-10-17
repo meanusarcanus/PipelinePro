@@ -42,6 +42,12 @@ interface CrmStoreState {
   switchUser: (user: TeamMember) => void;
   setLoginModalOpen: (open: boolean) => void;
 
+  // Commercial Team & Seats Management (Max 10 users)
+  isTeamModalOpen: boolean;
+  setTeamModalOpen: (open: boolean) => void;
+  addTeamMember: (data: { name: string; email: string; role: string; avatar?: string; color?: string }) => { success: boolean; message: string };
+  removeTeamMember: (userId: string) => { success: boolean; message: string };
+
   // Messaging hub
   channels: ChatChannel[];
   activeChannelId: string;
@@ -182,6 +188,98 @@ export const useCrmStore = create<CrmStoreState>((set, get) => ({
     });
   },
   setLoginModalOpen: (open) => set({ isLoginModalOpen: open }),
+
+  // Commercial Team & Seats Management (Max 10 users)
+  isTeamModalOpen: false,
+  setTeamModalOpen: (open) => set({ isTeamModalOpen: open }),
+  addTeamMember: (data) => {
+    const currentTeam = get().team;
+    if (currentTeam.length >= 10) {
+      get().addToast({
+        title: 'Commercial Limit Reached',
+        message: 'Maximum 10 commercial seats reached. Upgrade to Enterprise tier to add more users.',
+        type: 'warning'
+      });
+      return { 
+        success: false, 
+        message: 'Maximum 10 commercial seats reached. Upgrade to Enterprise tier to add more users.' 
+      };
+    }
+    const emailExists = currentTeam.some(m => m.email.toLowerCase() === data.email.trim().toLowerCase());
+    if (emailExists) {
+      get().addToast({
+        title: 'Duplicate Email',
+        message: 'A user with this email address already exists.',
+        type: 'warning'
+      });
+      return {
+        success: false,
+        message: 'A user with this email address already exists.'
+      };
+    }
+
+    const nameParts = data.name.trim().split(' ');
+    const initials = nameParts.length > 1 
+      ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+      : data.name.trim().substring(0, 2).toUpperCase();
+
+    const colors = ['#00c875', '#579bfc', '#a25ddc', '#fdab3d', '#e2445c', '#6366f1', '#06b6d4', '#ec4899', '#10b981', '#f59e0b'];
+    const assignedColor = data.color || colors[currentTeam.length % colors.length];
+
+    const newMember: TeamMember = {
+      id: 'user-' + Date.now(),
+      name: data.name.trim(),
+      email: data.email.trim().toLowerCase(),
+      role: data.role.trim(),
+      avatar: data.avatar || '',
+      initials,
+      color: assignedColor
+    };
+
+    const updated = [...currentTeam, newMember];
+    CrmService.saveTeam(updated);
+    set({ team: updated });
+
+    get().addToast({
+      title: 'Commercial Seat Assigned',
+      message: `${newMember.name} added (${updated.length}/10 seats utilized).`,
+      type: 'success'
+    });
+
+    return { success: true, message: 'User added successfully' };
+  },
+
+  removeTeamMember: (userId) => {
+    const currentTeam = get().team;
+    if (userId === get().currentUser.id) {
+      get().addToast({
+        title: 'Action Blocked',
+        message: 'Cannot remove the currently logged-in user session.',
+        type: 'warning'
+      });
+      return { success: false, message: 'Cannot remove the currently logged-in user.' };
+    }
+    if (currentTeam.length <= 1) {
+      get().addToast({
+        title: 'Action Blocked',
+        message: 'At least one team member must remain active.',
+        type: 'warning'
+      });
+      return { success: false, message: 'At least one team member must remain active.' };
+    }
+    const memberToRemove = currentTeam.find(m => m.id === userId);
+    const updated = currentTeam.filter(m => m.id !== userId);
+    CrmService.saveTeam(updated);
+    set({ team: updated });
+
+    get().addToast({
+      title: 'Commercial Seat Released',
+      message: `${memberToRemove ? memberToRemove.name : 'User'} removed. ${updated.length}/10 seats now in use.`,
+      type: 'info'
+    });
+
+    return { success: true, message: 'User removed successfully' };
+  },
 
   // Messaging hub
   channels: CrmService.getChatChannels(),

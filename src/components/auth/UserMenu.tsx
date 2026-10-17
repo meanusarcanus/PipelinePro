@@ -7,7 +7,9 @@ import {
   Check,
   Smartphone,
   Laptop,
-  Cpu
+  Cpu,
+  Users,
+  UserPlus
 } from 'lucide-react';
 import { useCrmStore } from '../../store/useCrmStore';
 import { Avatar } from '../common/Avatar';
@@ -22,7 +24,8 @@ export const UserMenu: React.FC = () => {
     setLoginModalOpen, 
     logout,
     deviceMode,
-    setDeviceMode 
+    setDeviceMode,
+    setTeamModalOpen 
   } = useCrmStore();
 
   const deviceOptions: { mode: DeviceMode; label: string; icon: React.FC<{ className?: string }> }[] = [
@@ -98,9 +101,21 @@ export const UserMenu: React.FC = () => {
 
             {/* Persona Switcher Menu */}
             <div className="p-2 border-b border-slate-100">
-              <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-amber-500" />
-                Switch Active Persona
+              <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+                <span className="flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  Switch Active Persona
+                </span>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    setTeamModalOpen(true);
+                  }}
+                  className="text-blue-600 hover:text-blue-700 font-semibold flex items-center gap-0.5 capitalize hover:underline"
+                >
+                  <UserPlus className="w-3 h-3" />
+                  <span>Manage</span>
+                </button>
               </div>
 
               <div className="space-y-0.5 mt-1">
@@ -134,6 +149,24 @@ export const UserMenu: React.FC = () => {
 
             {/* Actions */}
             <div className="p-1 space-y-0.5">
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  setTeamModalOpen(true);
+                }}
+                className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-slate-700 hover:bg-slate-50 transition-colors font-medium"
+              >
+                <div className="flex items-center gap-2">
+                  <Users className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Team & Commercial Seats</span>
+                </div>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                  team.length >= 10 ? 'bg-rose-100 text-rose-700' : 'bg-blue-100 text-blue-700'
+                }`}>
+                  {team.length}/10
+                </span>
+              </button>
+
               <button
                 onClick={() => {
                   setIsOpen(false);
